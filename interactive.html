@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Filter Page</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 1rem; background: #f5f5f5; }
+    h2 { text-align: center; }
+    .controls, .products { max-width: 1000px; margin: auto; }
+    .controls { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
+    select, input[type="number"] { padding: 0.5rem; }
+    .product { background: white; border: 1px solid #ddd; padding: 1rem; margin-bottom: 1rem; border-radius: 6px; }
+    .product h3 { margin: 0 0 0.5rem; }
+    .product span { display: block; color: #555; }
+  </style>
+</head>
+<body>
+  <h2>Product Listings</h2>
+
+  <div class="controls">
+    <select id="categoryFilter">
+      <option value="all">All Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="books">Books</option>
+      <option value="fashion">Fashion</option>
+    </select>
+
+    <input type="number" id="maxPrice" placeholder="Max Price" />
+    
+    <select id="sortRating">
+      <option value="default">Sort by Rating</option>
+      <option value="high">High to Low</option>
+      <option value="low">Low to High</option>
+    </select>
+  </div>
+
+  <div class="products" id="productList"></div>
+
+  <script>
+    const products = [
+      { name: "Smartphone", category: "electronics", price: 599, rating: 4.5 },
+      { name: "T-Shirt", category: "fashion", price: 19, rating: 4.1 },
+      { name: "Laptop", category: "electronics", price: 999, rating: 4.8 },
+      { name: "Novel - Fiction", category: "books", price: 12, rating: 4.3 },
+      { name: "Jeans", category: "fashion", price: 39, rating: 3.9 },
+      { name: "Headphones", category: "electronics", price: 89, rating: 4.0 },
+      { name: "Cookbook", category: "books", price: 25, rating: 4.7 }
+    ];
+
+    const categoryFilter = document.getElementById("categoryFilter");
+    const maxPrice = document.getElementById("maxPrice");
+    const sortRating = document.getElementById("sortRating");
+    const productList = document.getElementById("productList");
+
+    function renderProducts(items) {
+      productList.innerHTML = "";
+      items.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <h3>${p.name}</h3>
+          <span>Category: ${p.category}</span>
+          <span>Price: $${p.price}</span>
+          <span>Rating: ${p.rating}</span>
+        `;
+        productList.appendChild(div);
+      });
+    }
+
+    function filterAndSort() {
+      let filtered = [...products];
+
+      const cat = categoryFilter.value;
+      const price = parseFloat(maxPrice.value);
+      const sort = sortRating.value;
+
+      if (cat !== "all") {
+        filtered = filtered.filter(p => p.category === cat);
+      }
+
+      if (!isNaN(price)) {
+        filtered = filtered.filter(p => p.price <= price);
+      }
+
+      if (sort === "high") {
+        filtered.sort((a, b) => b.rating - a.rating);
+      } else if (sort === "low") {
+        filtered.sort((a, b) => a.rating - b.rating);
+      }
+
+      renderProducts(filtered);
+    }
+
+    categoryFilter.addEventListener("change", filterAndSort);
+    maxPrice.addEventListener("input", filterAndSort);
+    sortRating.addEventListener("change", filterAndSort);
+
+    // Initial render
+    renderProducts(products);
+  </script>
+</body>
+</html>
